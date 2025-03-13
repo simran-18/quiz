@@ -40,7 +40,6 @@ const fetchQuizData = async () => {
 };
 
 const Quiz = () => {
-  const [showToast, setShowToast] = useState("");
   const [quizData, setQuizData] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -48,7 +47,7 @@ const Quiz = () => {
   const [completed, setCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [answered, setAnswered] = useState(false);
 
   useEffect(() => {
     const loadQuiz = async () => {
@@ -66,14 +65,12 @@ const Quiz = () => {
   }, []);
 
   const handleOptionSelect = (optionId) => {
-    if (!selectedOption) {
+    if (!answered) {
       setSelectedOption(optionId);
-      const isCorrect = optionId === quizData[currentIndex].correctAnswerId;
-      if (isCorrect) {
+      setAnswered(true);
+
+      if (optionId === quizData[currentIndex].correctAnswerId) {
         setScore((prevScore) => prevScore + 1);
-        setShowToast("Correct Answer!", "success");
-      } else {
-        setShowToast("Wrong Answer!", "error");
       }
     }
   };
@@ -82,9 +79,9 @@ const Quiz = () => {
     if (currentIndex < quizData.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
       setSelectedOption(null);
+      setAnswered(false);
     } else {
       setCompleted(true);
-      setShowToast("Quiz Completed!", "info");
     }
   };
 
@@ -93,7 +90,7 @@ const Quiz = () => {
     setScore(0);
     setSelectedOption(null);
     setCompleted(false);
-    setShowToast(" Quiz Restarted!", "info");
+    setAnswered(false);
   };
 
   if (loading) return <p className="loading">Loading quiz...</p>;
@@ -104,20 +101,32 @@ const Quiz = () => {
       {!completed ? (
         <>
           <h1 className="quiz-title">Quiz App</h1>
-          <p className="question">Question : {quizData[currentIndex]?.question}</p>
-
+          <h2>{currentIndex + 1}/{quizData.length} Question</h2>
+          <p className="question">{quizData[currentIndex]?.question}</p>
           <div className="options-container">
-            {quizData[currentIndex]?.options.map((option) => (
-              <div
-                key={`${currentIndex}-${option.id}`} // Unique key
-                className={`option-btn ${selectedOption === option.id ? "selected" : ""}`}
-                onClick={() => handleOptionSelect(option.id)}
-              >
-                {option.text}
-              </div>
-            ))}
+            {quizData[currentIndex]?.options.map((option) => {
+              let optionClass = "option-btn";
+              if (answered) {
+                if (option.id === quizData[currentIndex].correctAnswerId) {
+                  optionClass += " correct"; // Green for correct answer
+                } else if (option.id === selectedOption) {
+                  optionClass += " incorrect"; // Red for wrong answer
+                }
+              }
+
+              return (
+                <div
+                  key={`${currentIndex}-${option.id}`}
+                  className={optionClass}
+                  onClick={() => handleOptionSelect(option.id)}
+                >
+                  {option.text}
+                </div>
+              );
+            })}
           </div>
-          <button className="next-btn" onClick={handleNext} disabled={!selectedOption}>
+
+          <button className="next-btn" onClick={handleNext} disabled={!answered}>
             {currentIndex < quizData.length - 1 ? "Next Question" : "Finish Quiz"}
           </button>
         </>
@@ -128,7 +137,6 @@ const Quiz = () => {
           <button className="restart-btn" onClick={restartQuiz}>Restart Quiz</button>
         </div>
       )}
-      {showToast && <div>{showToast}</div>}
     </div>
   );
 };

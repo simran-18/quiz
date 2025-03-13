@@ -19,10 +19,10 @@ const SignUp = () => {
 
     try {
       setLoading(true);
-      // Simulate API call
+      // Simulate SingUp API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      alert("Signup successful! Redirecting...");
-      navigate("/quiz");
+      alert("Signup successful! Redirecting to login screen...");
+      navigate("/");
     } catch (error) {
       alert("Signup failed! Please try again.");
     } finally {
@@ -33,7 +33,6 @@ const SignUp = () => {
   return (
     <form onSubmit={handleSubmit} className="form-container">
       <h1 className="divider">Signup Form</h1>
-
       <label htmlFor="name">Name</label>
       <input
         id="name"
@@ -60,14 +59,13 @@ const SignUp = () => {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Create a password"
       />
-
+       <p className="login-link">
+        Already have an account? <Link to="/">Login here</Link>
+      </p>
+     
       <button type="submit" disabled={disabled || loading}>
         {loading ? "Signing Up..." : "Submit"}
       </button>
-
-      <p className="login-link">
-        Already have an account? <Link to="/">Login here</Link>
-      </p>
     </form>
   );
 };

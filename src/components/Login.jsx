@@ -20,12 +20,12 @@ const Login = () => {
 
     try {
       setLoading(true);
-      // Simulate API request delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));      
-      alert("Login successful! Redirecting...");
+      // Simulate login API request delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      alert("Login successful! Redirecting to the quiz screen...");
       handleLoggedIn();
       navigate("/quiz");
-     
+
     } catch (error) {
       alert("Login failed! Something went wrong.");
     } finally {
@@ -36,7 +36,6 @@ const Login = () => {
   return (
     <form onSubmit={handleSubmit} className="form-container">
       <h1 className="divider">Login Form</h1>
-
       <label htmlFor="email">Email</label>
       <input
         id="email"
@@ -54,14 +53,12 @@ const Login = () => {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Enter your password"
       />
-
-      <button type="submit" disabled={disabled || loading}>
-        {loading ? "Logging in..." : "Submit"}
-      </button>
-
       <p className="signup-link">
         New user? <Link to="/signup">Sign up here</Link>
       </p>
+      <button type="submit" disabled={disabled || loading}>
+        {loading ? "Logging in..." : "Submit"}
+      </button>
     </form>
   );
 };
